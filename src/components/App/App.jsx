@@ -1,19 +1,28 @@
 import ContactForm from '../ContactForm/ContactForm';
 import SearchBox from '../SearchBox/SearchBox';
 import ContactList from '../ContactList/ContactList';
+import Loader from '../Loader/Loader';
 
 import css from './App.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchContacts } from '../../redux/contactsOps';
 
 const App = () => {
-  // const visibleContcats = contacts.filter(contact =>
-  //   contact.name.toLowerCase().includes(searchBarFilter.toLowerCase())
-  // );
+  const dispath = useDispatch();
+  const loading = useSelector(state => state.contacts.loading);
+  const error = useSelector(state => state.contacts.error);
 
+  useEffect(() => {
+    dispath(fetchContacts());
+  }, [dispath]);
   return (
     <div className={css.container}>
       <h1>Phonebook</h1>
       <ContactForm />
       <SearchBox />
+      {loading && <Loader></Loader>}
+      {error && <div>{error}</div>}
       <ContactList />
     </div>
   );
