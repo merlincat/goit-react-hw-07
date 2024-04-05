@@ -26,7 +26,11 @@ const Contact = ({ data }) => {
             dispatch(deleteContact(data.id))
               .unwrap()
               .then(value => {
-                toast.success(`Contact ${value.name} deleted from your list!`);
+                toast.success(
+                  `Contact ${
+                    value.name ? value.name : 'deleted contact'
+                  } deleted from your list!`
+                );
               })
               .catch(() => {
                 toast.error('Oops, something went wrong, please try again');

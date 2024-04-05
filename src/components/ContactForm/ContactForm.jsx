@@ -1,5 +1,4 @@
 import { Form, Formik, Field, ErrorMessage } from 'formik';
-import { nanoid } from 'nanoid';
 import * as Yup from 'yup';
 import css from './ContactForm.module.css';
 import { addContact } from '../../redux/contactsOps';
@@ -9,7 +8,6 @@ import toast, { Toaster } from 'react-hot-toast';
 const ContactForm = () => {
   const dispatch = useDispatch();
 
-  const contactNumberId = nanoid(4);
   const handleSubmit = (values, actions) => {
     const newContact = {
       name: values.name,
@@ -59,12 +57,11 @@ const ContactForm = () => {
             />
           </div>
           <div className={css.formInner}>
-            <label htmlFor={contactNumberId}>Number</label>
+            <label>Number</label>
             <Field
               className={css.formInput}
               type="tel"
               name="number"
-              id={contactNumberId}
               placeholder="111-22-33"
               pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
             />
