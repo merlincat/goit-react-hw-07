@@ -2,8 +2,9 @@ import { Form, Formik, Field, ErrorMessage } from 'formik';
 import { nanoid } from 'nanoid';
 import * as Yup from 'yup';
 import css from './ContactForm.module.css';
-import { addContact } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/contactsOps';
 import { useDispatch } from 'react-redux';
+import toast, { Toaster } from 'react-hot-toast';
 
 const ContactForm = () => {
   const dispatch = useDispatch();
@@ -14,7 +15,14 @@ const ContactForm = () => {
       name: values.name,
       number: values.number,
     };
-    dispatch(addContact(newContact));
+    dispatch(addContact(newContact))
+      .unwrap()
+      .then(value => {
+        toast.success(`New Contact ${value.name} added successefully!`);
+      })
+      .catch(() => {
+        toast.error('Oops, something went wrong, please try again');
+      });
     actions.resetForm();
   };
 
@@ -30,38 +38,45 @@ const ContactForm = () => {
   });
 
   return (
-    <Formik
-      initialValues={{ name: '', number: '' }}
-      onSubmit={handleSubmit}
-      validationSchema={FeedbackSchema}
-    >
-      <Form className={css.formWrapper}>
-        <div className={css.formInner}>
-          <label>Name</label>
-          <Field className={css.formInput} name="name" placeholder="John Doe" />
-          <ErrorMessage
-            className={css.errorMessage}
-            name="name"
-            component="div"
-          />
-        </div>
-        <div className={css.formInner}>
-          <label htmlFor={contactNumberId}>Number</label>
-          <Field
-            className={css.formInput}
-            type="tel"
-            name="number"
-            id={contactNumberId}
-            placeholder="111-22-33"
-            pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
-          />
-          <ErrorMessage name="number" component="div" />
-        </div>
-        <button className={css.formBtn} type="submit">
-          Add contact
-        </button>
-      </Form>
-    </Formik>
+    <>
+      <Formik
+        initialValues={{ name: '', number: '' }}
+        onSubmit={handleSubmit}
+        validationSchema={FeedbackSchema}
+      >
+        <Form className={css.formWrapper}>
+          <div className={css.formInner}>
+            <label>Name</label>
+            <Field
+              className={css.formInput}
+              name="name"
+              placeholder="John Doe"
+            />
+            <ErrorMessage
+              className={css.errorMessage}
+              name="name"
+              component="div"
+            />
+          </div>
+          <div className={css.formInner}>
+            <label htmlFor={contactNumberId}>Number</label>
+            <Field
+              className={css.formInput}
+              type="tel"
+              name="number"
+              id={contactNumberId}
+              placeholder="111-22-33"
+              pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
+            />
+            <ErrorMessage name="number" component="div" />
+          </div>
+          <button className={css.formBtn} type="submit">
+            Add contact
+          </button>
+        </Form>
+      </Formik>
+      <Toaster />
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { nanoid } from 'nanoid';
-import { fetchContacts } from './contactsOps';
+import { fetchContacts, deleteContact, addContact } from './contactsOps';
 
 const slice = createSlice({
   name: 'contacts',
@@ -9,26 +8,7 @@ const slice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {
-    deleteContact(state, action) {
-      state.items = state.items.filter(
-        contact => contact.id !== action.payload
-      );
-    },
-    addContact: {
-      reducer: (state, action) => {
-        state.items.push(action.payload);
-      },
-      prepare: newContact => {
-        return {
-          payload: {
-            ...newContact,
-            id: nanoid(4),
-          },
-        };
-      },
-    },
-  },
+
   extraReducers: builder =>
     builder
       .addCase(fetchContacts.pending, state => {
@@ -42,13 +22,52 @@ const slice = createSlice({
       .addCase(fetchContacts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(deleteContact.pending, state => {
+        state.error = null;
+        state.loading = true;
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items = state.items.filter(item => item.id !== action.payload.id);
+      })
+      .addCase(deleteContact.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addContact.pending, state => {
+        state.error = null;
+        state.loading = true;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items.push(action.payload);
+      })
+      .addCase(addContact.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       }),
 });
 
-export const { deleteContact, addContact } = slice.actions;
 export default slice.reducer;
 
 // додавати id тут
 // addContact(state, action) {
 //       state.items.push(action.payload);
 //     },
+
+// reducers: {
+//   addContact: {
+//     reducer: (state, action) => {
+//       state.items.push(action.payload);
+//     },
+//     prepare: newContact => {
+//       return {
+//         payload: {
+//           ...newContact,
+//           id: nanoid(4),
+//         },
+//       };
+//     },
+//   },
+// },
